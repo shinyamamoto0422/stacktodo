@@ -1,18 +1,20 @@
 import './App.css';
 import { useState } from 'react';
+import 'firebase/firestore';
+import firebase from './firebase';
 
 import { InputTextWithButton } from './components/InputTextWithButton';
 import { IncompleteTodo } from './components/IncompleteTodo';
 import { CompleteTodo } from './components/CompleteTodo';
 
 export const App = () => {
-  const [ todoText, setTodoText ] = useState('');
+  const [ todoText, setTodoText ] = useState(''); //input setInput
 
-  const [ incTodos, setIncTodos ] = useState([]);
+  const [ incTodos, setIncTodos ] = useState([]); //todolist setTodoList
 
-  const [ cTodos, setCTodos ] = useState([]);
+  const [ cTodos, setCTodos ] = useState([]); //isLoading setIsLoading
 
-  const onChangeText = (e) => setTodoText(e.target.value);
+  const onChangeText = (e) => setTodoText(e.target.value); 
 
   const onClickAdd = () => {
     if (todoText === '') return;

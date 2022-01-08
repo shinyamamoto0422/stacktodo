@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, List } from '@mui/material';
+import { Box, List } from '@mui/material';
 import cCeckImage from '../assets/image/cCheck.svg';
 
 export const CompleteTodo = (props) => {
