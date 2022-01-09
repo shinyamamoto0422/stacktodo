@@ -1,76 +1,49 @@
 import './App.css';
 import { useState } from 'react';
-import 'firebase/firestore';
-import firebase from './firebase';
+import { Todo } from './Pages/Todo/Todo';
 
-import { InputTextWithButton } from './components/InputTextWithButton';
-import { IncompleteTodo } from './components/IncompleteTodo';
-import { CompleteTodo } from './components/CompleteTodo';
+import { Button } from '@mui/material';
 
 export const App = () => {
-  const [ todoText, setTodoText ] = useState(''); //input setInput
+  const [ input, setInput ] = useState([]);
+  const [ todoList, setTodoList ] = useState([]);
+  const [ finishedList, setFinishedList ] = useState([]);
 
-  const [ incTodos, setIncTodos ] = useState([]); //todolist setTodoList
+  const addTodo = () => {
+    setTodoList([...todoList, input]);
+    setInput('');
+  }
 
-  const [ cTodos, setCTodos ] = useState([]); //isLoading setIsLoading
+  const deleteTodo = (index) => {
+    setTodoList(todoList.filter((_,idx) => idx !== index))
+  }
 
-  const onChangeText = (e) => setTodoText(e.target.value); 
+  const deleteFinishTodo = (index) => {
+    setFinishedList(finishedList.filter((_, idx) => idx !== index))
+  }
 
-  const onClickAdd = () => {
-    if (todoText === '') return;
-    const newTodos = [...incTodos, todoText];
-    setIncTodos(newTodos);
-    setTodoText('');
-  };
+  const finishTodo = (index) => {
+    deleteTodo(index);
+    setFinishedList([...finishedList, todoList.find((_, idx) => idx === index)])
+  }
 
-  const onClickDelete = (index) => {
-    const newTodos = [...incTodos];
-    newTodos.splice(index, 1);
-    setIncTodos(newTodos);
-  };
-
-  const onClickComplete = (index) => {
-    const newInCTodos = [...incTodos];
-    newInCTodos.splice(index, 1);
-    const newCTodos = [...cTodos, incTodos[index]];
-    setIncTodos(newInCTodos);
-    setCTodos(newCTodos);
-  };
-
-  const onClickBack = (index) => {
-    const newCTodos = [...cTodos];
-    newCTodos.splice(index, 1);
-    const newInCTodos = [...incTodos, cTodos[index]];
-    setCTodos(newCTodos);
-    setIncTodos(newInCTodos);
-  };
-
-  return ( 
+  const reopenTodo = (index) => {
+    deleteFinishTodo(index)
+    setTodoList([...todoList, finishedList.find((_, idx) => idx === index)])
+  }
+  
+  return (
     <>
-      <InputTextWithButton
-        disabled={incTodos.length >= 5 }
-        todoText={todoText} 
-        onChange={onChangeText} 
-        onClick={onClickAdd} 
-        label={"TODOを追加"}
-        InputButtonText={"追加"}
-      />
-      {incTodos.length >= 5 && 
-      <p style={{ color: "red" }}>登録限度を超えました。タスクをこなしましょう!
-      </p>
-      }
-      
-      <IncompleteTodo  
-        todo={incTodos} 
-        onClickComplete={onClickComplete} 
-        onClickDelete={onClickDelete} 
-      />
-
-      <CompleteTodo 
-        todo={cTodos} 
-        onClick={onClickBack} 
-      />
-
+      <input type="text"  onChange={(e) => setInput(e.target.value)} value={input}/>
+      <Button variant='contained' size='small' onClick={() => addTodo()}>追加</Button>
+      <div>
+        <h1>未完了</h1>
+        <Todo todoList={todoList} deleteTodo={deleteTodo} changeTodoStatus={finishTodo} type="todo"/>
+      </div>
+      <div>
+        <h1>完了済み</h1>
+        <Todo todoList={finishedList} deleteTodo={deleteFinishTodo} changeTodoStatus={reopenTodo} type="done"/>
+      </div>
     </>
   );
 };
